@@ -83,118 +83,52 @@ class Hello(object):
     def hello(self, toprint="Hello World!"):
         return toprint
     #@+node:2014fall.20141215194146.1791: *3* index
+    # 以 @ 開頭的 cherrypy.expose 為 decorator, 用來表示隨後的成員方法, 可以直接讓使用者以 URL 連結執行
     @cherrypy.expose
-    def index(self, guess=None):
-        # 將標準答案存入 answer session 對應區
-        theanswer = random.randint(1, 100)
-        thecount = 0
-        # 將答案與計算次數變數存進 session 對應變數
-        cherrypy.session['answer'] = theanswer
-        cherrypy.session['count'] = thecount
-        # 印出讓使用者輸入的超文件表單
+    # index 方法為 CherryPy 各類別成員方法中的內建(default)方法, 當使用者執行時未指定方法, 系統將會優先執行 index 方法
+    # 有 self 的方法為類別中的成員方法, Python 程式透過此一 self 在各成員方法間傳遞物件內容
+    def index(self):
         outstring = '''
-    <!DOCTYPE html> 
-    <html>
-    <head>
-    <meta http-equiv="content-type" content="text/html;charset=utf-8">
-    <!-- 載入 brython.js -->
-    <script type="text/javascript" src="/static/Brython3.1.1-20150328-091302/brython.js"></script>
-    <script src="/static/Cango2D.js" type="text/javascript"></script>
-    <script src="/static/gearUtils-04.js" type="text/javascript"></script>
-    </head>
-    <!-- 啟動 brython() -->
-    <body onload="brython()">
+        <!DOCTYPE html> 
+        <html>
+        <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        </head>
+        <body>
+        <a href=>40223223 四設二乙 洪賓志</a><br />
+        <a href="spur2">spur2</a><br />
+        <a href="drawspur2">drawspur2</a><br />
+        </body>
+        </html>
+        '''
         
-    <form method=POST action=doCheck>
-
-    四設二乙 40223223 洪賓志
-    請輸入您所猜的整數:<input type=text name=guess><br />
-    <input type=submit value=send>
-    </form>
-    <hr>
-    <!-- 以下在網頁內嵌 Brython 程式 -->
-    <script type="text/python">
-    from browser import document, alert
-
-    def echo(ev):
-        alert(document["zone"].value)
-
-    # 將文件中名稱為 mybutton 的物件, 透過 click 事件與 echo 函式 bind 在一起
-    document['mybutton'].bind('click',echo)
-    </script>
-    <input id="zone"><button id="mybutton">click !</button>
-    <hr>
-    <!-- 以下為 canvas 畫圖程式 -->
-    <script type="text/python">
-    # 從 browser 導入 document
-    from browser import document
-    import math
-
-    # 畫布指定在名稱為 plotarea 的 canvas 上
-    # 以下使用中文變數名稱
-    canvas = document["plotarea"]
-    ctx = canvas.getContext("2d")
-
-    # 用紅色畫一條直線
-    ctx.beginPath()
-    ctx.lineWidth = 3
-    ctx.moveTo(0, 0)
-    ctx.lineTo(0, 500)
-    ctx.strokeStyle = "red"
-    ctx.stroke()
-
-    # 用藍色再畫一條直線
-    ctx.beginPath()
-    ctx.lineWidth = 3
-    ctx.moveTo(0, 0)
-    ctx.lineTo(500, 0)
-    ctx.strokeStyle = "blue"
-    ctx.stroke()
-
-    # 用綠色再畫一條直線
-    ctx.beginPath()
-    ctx.lineWidth = 3
-    ctx.moveTo(0, 0)
-    ctx.lineTo(500, 500)
-    ctx.strokeStyle = "green"
-    ctx.stroke()
-
-    # 用黑色畫一個圓
-    ctx.beginPath()
-    ctx.lineWidth = 3
-    ctx.strokeStyle = "black"
-    ctx.arc(250,250,50,0,2*math.pi)
-    ctx.stroke()
-    </script>
-    <canvas id="plotarea" width="800" height="600"></canvas>
-    </body>
-    </html>
-    '''
-
         return outstring
     #@+node:2015.20150330144929.1713: *3* twoDgear
     @cherrypy.expose
     # N 為齒數, M 為模數, P 為壓力角
-    def drawspur(self, N=20, M=5, P=15):
+    def drawspur2(self, N=20, M=5, P=15):
         outstring = '''
     <!DOCTYPE html> 
     <html>
     <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    </head>
+    <body>
+        
+    <form method=POST action=drawspuraction>
+    小齒輪齒數:<input type=text name=N value='''+str(N)+'''><br />
+    減速比:<input type=text name=M value = '''+str(M)+'''><br />
+    模數"與"壓力角:<input type=text name=P value = '''+str(P)+'''><br />
+    <input type=submit value=畫出正齒輪輪廓>
+    </form>
+    <br /><a href="index">index</a><br />
     <!-- 載入 brython.js -->
     <script type="text/javascript" src="/static/Brython3.1.1-20150328-091302/brython.js"></script>
-    <script src="/static/Cango2D.js" type="text/javascript"></script>
-    <script src="/static/gearUtils-04.js" type="text/javascript"></script>
-    </head>
-    <!-- 啟動 brython() -->
-    <body onload="brython()">
-        
-    <form method=POST action=mygeartest>
-    齒數:<input type=text name=N><br />
-    模數:<input type=text name=M><br />
-    壓力角:<input type=text name=P><br />
-    <input type=submit value=send>
-    </form>
+    <script>
+    window.onload=function(){
+    brython();
+    }
+    </script>
     </body>
     </html>
     '''
@@ -203,32 +137,54 @@ class Hello(object):
     #@+node:2015.20150331094055.1733: *3* threeDgear
     @cherrypy.expose
     # N 為齒數, M 為模數, P 為壓力角
-    def threeDgear(self, N=20, M=5, P=15):
+    def drawspuraction(self, N=20, M=5, P=15):
         outstring = '''
     <!DOCTYPE html> 
     <html>
     <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    </head>
+    <body>
+    <a href="index">index</a><br />
+        
+    <!-- 以下為 canvas 畫圖程式 -->
+    <script type="text/python">
+    # 從 browser 導入 document
+    from browser import document
+    from math import *
+    # 請注意, 這裡導入位於 Lib/site-packages 目錄下的 spur.py 檔案
+    import spur
+
+    # 準備在 id="plotarea" 的 canvas 中繪圖
+    canvas = document["plotarea"]
+    ctx = canvas.getContext("2d")
+
+    # 以下利用 spur.py 程式進行繪圖
+    # N 為齒數
+    N = '''+str(N)+'''
+    # M 為模數
+    M = '''+str(M)+'''
+    # 壓力角 P 單位為角度
+    P = '''+str(P)+'''
+    # 計算兩齒輪的節圓半徑
+    rp = N*M/2
+
+    spur.Spur(ctx).Gear(600, 600, rp, N, P, "blue")
+
+    </script>
+    <canvas id="plotarea" width="1200" height="1200"></canvas>
     <!-- 載入 brython.js -->
     <script type="text/javascript" src="/static/Brython3.1.1-20150328-091302/brython.js"></script>
-    <script src="/static/Cango2D.js" type="text/javascript"></script>
-    <script src="/static/gearUtils-04.js" type="text/javascript"></script>
-    </head>
-    <!-- 啟動 brython() -->
-    <body onload="brython()">
-        
-    <form method=POST action=mygeartest2>
-    齒數:<input type=text name=N><br />
-    模數:<input type=text name=M><br />
-    壓力角:<input type=text name=P><br />
-    <input type=submit value=send>
-    </form>
+    <script>
+    window.onload=function(){
+    brython();
+    }
+    </script>
     </body>
     </html>
     '''
 
         return outstring
-
     #@+node:2015.20150330144929.1762: *3* do2Dgear
     @cherrypy.expose
     # N 為齒數, M 為模數, P 為壓力角
@@ -729,7 +685,7 @@ class Hello(object):
     #@+node:amd.20150415215023.1: *3* mygeartest2
     @cherrypy.expose
     # N 為齒數, M 為模數, P 為壓力角
-    def spur(self, N=20, M=5, P=15):
+    def spur2(self, N=20, M=5, P=15):
         outstring = '''
     <!DOCTYPE html> 
     <html>
@@ -737,55 +693,17 @@ class Hello(object):
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <!-- 載入 brython.js -->
     <script type="text/javascript" src="/static/Brython3.1.1-20150328-091302/brython.js"></script>
-    <script src="/static/Cango2D.js" type="text/javascript"></script>
-    <script src="/static/gearUtils-04.js" type="text/javascript"></script>
     </head>
     <!-- 啟動 brython() -->
     <body onload="brython()">
-
-    <!-- 以下為 canvas 畫圖程式 -->
-    <script type="text/python">
-    # 從 browser 導入 document
-    from browser import document
-    from math import *
-    # 請注意, 這裡導入位於 Lib/site-packages 目錄下的 spur.py 檔案
-    import spur
-
-    # 準備在 id="plotarea" 的 canvas 中繪圖
-    canvas = document["plotarea"]
-    ctx = canvas.getContext("2d")
-
-    # 以下利用 spur.py 程式進行繪圖, 接下來的協同設計運算必須要配合使用者的需求進行設計運算與繪圖
-    # 其中並將工作分配給其他組員建立類似 spur.py 的相關零件繪圖模組
-    # midx, midy 為齒輪圓心座標, rp 為節圓半徑, n 為齒數, pa 為壓力角, color 為線的顏色
-    # Gear(midx, midy, rp, n=20, pa=20, color="black"):
-    # 模數決定齒的尺寸大小, 囓合齒輪組必須有相同的模數與壓力角
-    # 壓力角 pa 單位為角度
-
-    n_g1 = int(input("齒數"))
-    m = int(input("模數"))
-    pa = int(input("壓力角"))
-
-    # 計算兩齒輪的節圓半徑
-    rp_g1 = m*n_g1/2
-
-
-    # 將第1齒輪順時鐘轉 90 度
-    # 使用 ctx.save() 與 ctx.restore() 以確保各齒輪以相對座標進行旋轉繪圖
-    ctx.save()
-    # translate to the origin of second gear
-    ctx.translate(400,400)
-    # rotate to engage
-    ctx.rotate(pi/2)
-    # put it back
-    ctx.translate(-400,-400)
-    spur.Spur(ctx).Gear(400,400,rp_g1,n_g1, pa, "blue")
-    ctx.restore()
-
-
-
-    </script>
-    <canvas id="plotarea" width="2000" height="2000"></canvas>
+        
+    <form method=POST action=spuraction>
+    齒數:<input type=text name=N value='''+str(N)+'''><br />
+    模數:<input type=text name=M value = '''+str(M)+'''><br />
+    壓力角:<input type=text name=P value = '''+str(P)+'''><br />
+    <input type=submit value=send>
+    </form>
+    <br /><a href="index">index</a><br />
     </body>
     </html>
     '''
@@ -939,31 +857,28 @@ class Hello(object):
         return outstring
     #@+node:2014fall.20141215194146.1793: *3* doCheck
     @cherrypy.expose
-    def doCheck(self, guess=None):
-        # 假如使用者直接執行 doCheck, 則設法轉回根方法
-        if guess is None:
-            raise cherrypy.HTTPRedirect("/")
-        # 從 session 取出 answer 對應資料, 且處理直接執行 doCheck 時無法取 session 值情況
-        try:
-            theanswer = int(cherrypy.session.get('answer'))
-        except:
-            raise cherrypy.HTTPRedirect("/")
-        # 經由表單所取得的 guess 資料型別為 string
-        try:
-            theguess = int(guess)
-        except:
-            return "error " + self.guessform()
-        # 每執行 doCheck 一次,次數增量一次
-        cherrypy.session['count']  += 1
-        # 答案與所猜數字進行比對
-        if theanswer < theguess:
-            return "big " + self.guessform()
-        elif theanswer > theguess:
-            return "small " + self.guessform()
-        else:
-            # 已經猜對, 從 session 取出累計猜測次數
-            thecount = cherrypy.session.get('count')
-            return "exact: <a href=''>再猜</a>"
+    # N 為齒數, M 為模數, P 為壓力角
+    def spuraction(self, N=20, M=5, P=15):
+        output = '''
+        <!doctype html><html>
+        <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>2015CD Midterm</title>
+        </head> 
+        <body>
+        '''
+        output += "齒數為"+str(N)+"<br />"
+        output += "模數為"+str(M)+"<br />"
+        output += "壓力角為"+str(P)+"<br />"
+        output +='''<br /><a href="/spur">spur</a>(按下後再輸入)<br />'''
+        output +='''<br /><a href="index">index</a><br />
+        </body>
+        </html>
+        '''
+        
+        return output
+        
+        
     #@+node:2014fall.20141215194146.1789: *3* guessform
     def guessform(self):
         # 印出讓使用者輸入的超文件表單
